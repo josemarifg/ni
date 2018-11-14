@@ -1,0 +1,61 @@
+<h2><center><%= l(:label_home) %></center></h2>
+
+<div class="splitcontentimdeec">
+  <img src="/img/logo.jpg">
+  <%= textilizable Setting.welcome_text %>
+  <br>
+  <br>
+  <div class="contenedor">
+  
+  <div class="imdeec03">
+    <h3 class="blue">Sistema Directo</h3>
+    Sistema Directo es una solución a la gestión de las comunicaciones internas. Organiza todas las comunicaciones en proyectos y tareas. Los usuarios son conscientes de cuales son las prioridades y saben qué deben hacer, de esta forma los usuarios ahorran tiempo.
+  </div>
+  <div class="imdeec03">
+    <h3 class="blue">Proyectos y tareas</h3>
+    Una tarea es la unidad básica del sistema por la que los usuarios pasan para completar su trabajo. Las tareas se agrupan en proyectos. <br><br> No hay tareas olvidadas y se comparte toda la información.
+  </div> 
+  <div class="imdeec0302">
+    <h3 class="blue">Panel personal para la gestión del trabajo</h3>
+    Cada usuario tiene un panel personal que organiza su trabajo diario. El panel es personalizable, aunque las plantillas para las funciones básicas ya están listas para utilizar. El panel personal consta de las tareas que el usuario debe realizar.
+  </div> 
+
+</div>
+
+  <% if @news.any? %>
+  <div class="news box">
+  <h3><%=l(:label_news_latest)%></h3>
+    <%= render :partial => 'news/news', :collection => @news %>
+    <%= link_to l(:label_news_view_all), :controller => 'news' %>
+  </div>
+  <% end %>
+  <%= call_hook(:view_welcome_index_left, :projects => @projects) %>
+</div>
+
+<div class="splitcontentright">
+    <% if @projects.any? %>
+  <div class="projects box2">
+  <h3><%=l(:label_project_latest)%></h3>
+    <ul>
+    <% for project in @projects %>
+      <% @project = project %>
+      <li>
+      <%= link_to_project project %> (<%= format_time(project.created_on) %>)
+      <div class="wiki">
+        <%= textilizable project.short_description, :project => project %>
+      </div>
+      </li>
+    <% end %>
+    <% @project = nil %>
+    </ul>
+  </div>
+  <% end %>
+    <%= call_hook(:view_welcome_index_right, :projects => @projects) %>
+</div>
+
+<% content_for :header_tags do %>
+<%= auto_discovery_link_tag(:atom, {:controller => 'news', :action => 'index', :key => User.current.rss_key, :format => 'atom'},
+                                   :title => "#{Setting.app_title}: #{l(:label_news_latest)}") %>
+<%= auto_discovery_link_tag(:atom, {:controller => 'activities', :action => 'index', :key => User.current.rss_key, :format => 'atom'},
+                                   :title => "#{Setting.app_title}: #{l(:label_activity)}") %>
+<% end %>
